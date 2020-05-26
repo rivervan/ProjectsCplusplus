@@ -1,2 +1,0 @@
-# ProjectsCplusplus
-Projects in C++
