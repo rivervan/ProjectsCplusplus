@@ -1,7 +1,59 @@
 #include <iostream>
+#include <cmath>
 
 
 #include "SDL.h"
+
+#define PI 3.14159265
+
+/*
+
+  int SDL_RenderDrawPoints(SDL_Renderer*    renderer,
+                         const SDL_Point* points,
+                         int              count)
+
+
+
+*/
+
+
+
+
+
+
+SDL_Point  getTraslatePointScreen(int x, int y, int xso, int yso){
+     SDL_Point screenXY;     
+     screenXY.x = xso + x;
+     screenXY.y = yso + y*(-1);     
+     return screenXY;
+} 
+
+
+
+SDL_Point *getPointsSin(){        
+  static SDL_Point arr[2048];
+  
+   
+   int xt = 0;
+   int yt = 0;
+   
+
+   for(auto x = 0; x < 2048; x++){       
+      int y = sin(x*PI/180) * 128;
+
+       std::cout<< x << ", "<< y<< std::endl;
+        arr[x] = getTraslatePointScreen(x,y,0,1364); 
+      std::cout<< arr[x].x << ", "<< arr[x].y<< std::endl;
+
+   }
+
+    
+    return arr;
+}
+
+
+
+
 
 int main() {
    
@@ -9,11 +61,11 @@ int main() {
   constexpr std::size_t kFramesPerSecond{60};
   constexpr std::size_t kMsPerFrame{1000 / kFramesPerSecond};
 
-  constexpr std::size_t kScreenWidth{640};
-  constexpr std::size_t kScreenHeight{640};
+  constexpr std::size_t kScreenWidth{2048};
+  constexpr std::size_t kScreenHeight{2048};
 
-  constexpr std::size_t kGridWidth{32};
-  constexpr std::size_t kGridHeight{32};
+  constexpr std::size_t kGridWidth{128};
+  constexpr std::size_t kGridHeight{128};
    
 
 
@@ -54,9 +106,25 @@ int main() {
   int frame_count = 0;
   bool running = true;
 
-  int Xini = -40;
-  int Yini = 320;
+  //int Xini = 0;
+  //int Yini = 1364;
+  int Xini = 0;
+
+
+
+   
  
+  SDL_Point *points = getPointsSin();
+
+
+ /*
+  std::cout<<  "***************************" <<std::endl;
+   for(auto i = 0; i<200; i++){
+      std::cout<< points[i].x << ", "<< points[i].y<< std::endl;
+   }
+
+*/
+
 
   while (running) {
     frame_start = SDL_GetTicks();
@@ -76,18 +144,20 @@ int main() {
   alaArr.w = cabCtr.w;
   alaArr.h = cabCtr.h;
 
-  cabCola.w = cabCtr.w;
+  cabCola.w = cabCtr.w - 2;
   cabCola.h = cabCtr.h;
   
-  cabDel.w = cabCtr.w;
+  cabDel.w = cabCtr.w - 2 ;
   cabDel.h = cabCtr.h;
    
-  cabAtr.w = cabCtr.w;
+  cabAtr.w = cabCtr.w - 2;
   cabAtr.h = cabCtr.h;
 
   alaAbj.w = cabCtr.w;
   alaAbj.h = cabCtr.h;
 
+  
+  
 
   // Clear screen
   SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
@@ -95,31 +165,47 @@ int main() {
    
    
   SDL_SetRenderDrawColor(sdl_renderer, 0x77, 0xCC, 0x00, 0xFF);
-  cabCtr.x = Xini++;
-  cabCtr.y = Yini;
 
-  cabAtr.x = cabCtr.x-20;
+  SDL_RenderDrawPoints(sdl_renderer,points,2048);
+
+ 
+    //speed factor
+  
+
+   
+  cabCtr.x = points[Xini].x;
+  cabCtr.y = points[Xini].y;
+
+  /*
+  cabCtr.x = Xini;
+  cabCtr.y = Yini;
+  */
+  Xini += 5;
+
+
+
+  cabAtr.x = cabCtr.x-16;
   cabAtr.y = cabCtr.y;
 
-  cabCola.x = cabAtr.x - 20;
+  cabCola.x = cabAtr.x - 16;
   cabCola.y = cabAtr.y;
 
 
-  cabDel.x = cabCtr.x + 20;
+  cabDel.x = cabCtr.x + 16;
   cabDel.y = cabCtr.y;
   
-  SDL_RenderDrawLine(sdl_renderer, cabCtr.x , cabCtr.y,  cabCtr.x + 10, cabCtr.y - 40);
-  SDL_RenderDrawLine(sdl_renderer, cabCtr.x + 20, cabCtr.y,  cabCtr.x + 10 , cabCtr.y - 40);
+  SDL_RenderDrawLine(sdl_renderer, cabCtr.x , cabCtr.y,  cabCtr.x + 8, cabCtr.y - 32);
+  SDL_RenderDrawLine(sdl_renderer, cabCtr.x + 16, cabCtr.y,  cabCtr.x + 8 , cabCtr.y - 32);
 
 
-  SDL_RenderDrawLine(sdl_renderer, cabCtr.x , cabCtr.y + 20,  cabCtr.x + 10, cabCtr.y + 60);
-  SDL_RenderDrawLine(sdl_renderer, cabCtr.x + 20, cabCtr.y + 20,  cabCtr.x + 10 , cabCtr.y + 60);
+  SDL_RenderDrawLine(sdl_renderer, cabCtr.x , cabCtr.y + 16,  cabCtr.x + 8, cabCtr.y + 48);
+  SDL_RenderDrawLine(sdl_renderer, cabCtr.x + 16, cabCtr.y + 16,  cabCtr.x + 8 , cabCtr.y + 48);
 
-  SDL_RenderDrawLine(sdl_renderer, cabCola.x , cabCola.y,  cabCola.x, cabCola.y - 20);
-  SDL_RenderDrawLine(sdl_renderer, cabCola.x + 20 , cabCola.y,  cabCola.x , cabCola.y - 20);
+  SDL_RenderDrawLine(sdl_renderer, cabCola.x , cabCola.y,  cabCola.x, cabCola.y - 16);
+  SDL_RenderDrawLine(sdl_renderer, cabCola.x + 16 , cabCola.y,  cabCola.x , cabCola.y - 16);
 
-  SDL_RenderDrawLine(sdl_renderer, cabDel.x + 20 , cabDel.y,  cabDel.x + 30, cabDel.y +  10);
-  SDL_RenderDrawLine(sdl_renderer, cabDel.x + 20 , cabDel.y + 20,  cabDel.x + 30 , cabDel.y + 10);
+  SDL_RenderDrawLine(sdl_renderer, cabDel.x + 16 , cabDel.y,  cabDel.x + 24, cabDel.y +  8);
+  SDL_RenderDrawLine(sdl_renderer, cabDel.x + 16 , cabDel.y + 16,  cabDel.x + 24 , cabDel.y + 8);
 
 
   SDL_RenderFillRect(sdl_renderer, &cabCtr);
@@ -133,7 +219,6 @@ int main() {
 
 
     frame_end = SDL_GetTicks();
-
 
 
     // Keep track of how long each loop through the input/update/render cycle
@@ -154,11 +239,12 @@ int main() {
       SDL_Delay(kMsPerFrame - frame_duration);
     }
 
-    if(Xini == (kScreenWidth + 40))
+    if(Xini > 2047)
       break;
 
 
   }
+
 
 
 
