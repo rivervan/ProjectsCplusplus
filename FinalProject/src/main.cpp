@@ -7,6 +7,16 @@
 #define PI 3.141592653589793238462
 
 
+enum Trajectory{
+    Fly,
+    Arrive,
+    Wait,
+    TrackIzq,
+    TrackCentral,
+    TrackDer
+};
+
+
 
 struct PointCartesian
 {
@@ -67,25 +77,46 @@ SDL_Point *getPointsPathA(){
   float x = 0; 
   float y = 0;
 
-   
+   for(auto i = 0; i < 256 ; i++){
+       
+       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );          
+        arrElipse[i] = getTraslatePointScreen(x*64, (-1)*yPartial * 64 + cy*64,512,1152);       
+
+        x += 1.0/64.0;
+
+    }
+
     for(auto i = 0; i < 256 ; i++){
        
-       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );    
-
-       arrElipse[i] = getTraslatePointScreen(x *64,yPartial * 64 + cy*64,512,1152);
-       arrElipse[256+i] = getTraslatePointScreen(x*64, (-1)*yPartial * 64 + cy*64,512,1152);
+       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );           
+       arrElipse[256+i] = getTraslatePointScreen(x *64,yPartial * 64 + cy*64,512,1152);
+      
         x -= 1.0/64.0;
+
+    }
+
+
+    for(auto i = 0; i < 256 ; i++){
+       
+       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );           
+       arrElipse[512+i] = getTraslatePointScreen(x *64,yPartial * 64 + cy*64,512,1152);
+      
+        x -= 1.0/64.0;
+
+    }
+
+    for(auto i = 0; i < 256 ; i++){
+       
+       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );          
+       arrElipse[768+i] = getTraslatePointScreen(x*64, (-1)*yPartial * 64 + cy*64,512,1152);
+       
+
+        x += 1.0/64.0;
+
     }
     
-    x=0;
-    for(auto i = 0; i < 256 ; i++){       
-       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );    
 
-       arrElipse[512+i] = getTraslatePointScreen(x *64,yPartial * 64 + cy*64,512,1152);
-       arrElipse[768+i] = getTraslatePointScreen(x*64, (-1)*yPartial * 64 + cy*64,512,1152);
-        x += 1.0/64.0;
-    }
-   
+
   
 
 
@@ -109,12 +140,24 @@ SDL_Point *getPointsPathB(){
    
     for(auto i = 0; i < 256 ; i++){
        
-       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );    
+       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );           
+       arrElipse2[i] = getTraslatePointScreen(x*64, (-1)*yPartial * 64 + cy*64,512,1152);
 
-       arrElipse2[i] = getTraslatePointScreen(x *64,yPartial * 64 + cy*64,512,1152);
-       arrElipse2[256+i] = getTraslatePointScreen(x*64, (-1)*yPartial * 64 + cy*64,512,1152);
+       
+
         x -= 1.0/64.0;
+
     }
+
+     for(auto i = 0; i < 256 ; i++){
+       
+       float  yPartial = sqrt((By*By) - ( (By*By) * pow((x - cx),2)/(Ax*Ax)) );          
+       arrElipse2[256+i] = getTraslatePointScreen(x *64,yPartial * 64 + cy*64,512,1152);
+
+        x += 1.0/64.0;
+
+    }
+
 
 
     
@@ -262,7 +305,11 @@ int main() {
 
   //int Xini = 0;
   //int Yini = 1364;
-  int Xini = 0;
+
+
+  int cycle = 0;
+  int distance = 0;
+  int trajectoryPoint = 0; //Path fly
 
 
 
@@ -277,45 +324,21 @@ int main() {
   SDL_Point *pathFly = getPointsPathFly();
   
 
-  /*
+  
   std::cout<<  "***************************" <<std::endl;
-   for(auto i = 0; i<200; i++){
-      std::cout<< pathWait[i].x << ", "<< pathWait[i].y<< std::endl;
+   for(auto i = 0; i<512; i++){
+      std::cout<< pathArrive[i].x << ", "<< pathArrive[i].y<< std::endl;
    }
-*/
+
 
 SDL_Rect cabCtr;
-cabCtr.w = 32;
-cabCtr.h = 32;
+cabCtr.w = 24;
+cabCtr.h = 24;
 
- 
-/*     
-  SDL_Rect alaArr;
-  SDL_Rect alaAbj;
-  SDL_Rect cabDel;
-  SDL_Rect cabCtr;
-  SDL_Rect cabAtr;
-  SDL_Rect cabCola;
+SDL_Point alaA[3];
+SDL_Point alaB[3];
 
-  cabCtr.w = kScreenWidth / kGridWidth; //32 grid X 64 Tamaño
-  cabCtr.h = kScreenWidth / kGridWidth;
 
-  alaArr.w = cabCtr.w;
-  alaArr.h = cabCtr.h;
-
-  cabCola.w = cabCtr.w - 2;
-  cabCola.h = cabCtr.h;
-  
-  cabDel.w = cabCtr.w - 2 ;
-  cabDel.h = cabCtr.h;
-   
-  cabAtr.w = cabCtr.w - 2;
-  cabAtr.h = cabCtr.h;
-
-  alaAbj.w = cabCtr.w;
-  alaAbj.h = cabCtr.h;
-
-*/
 
 
   PointCartesian pxyBefore;
@@ -334,9 +357,12 @@ cabCtr.h = 32;
 
 
 
+   Trajectory currentTrajectory = Trajectory::Fly;
+   bool changeTrajectory = true;
+   bool isEnableTrack = true;
+  
 
-
- // while (running) {
+  while (running) {
     frame_start = SDL_GetTicks();
 
     
@@ -355,10 +381,9 @@ cabCtr.h = 32;
 
    
 
-  //GRAFICA SIN() 
- // SDL_SetRenderDrawColor(sdl_renderer, 0x77, 0xCC, 0x00, 0xFF);
- // SDL_RenderDrawPoints(sdl_renderer,points,2048);
+  
 
+  //SE TRAZAN LAS PATHS & TRAJECTORIES
 
   SDL_SetRenderDrawColor(sdl_renderer, 0x69, 0x69, 0x69, SDL_ALPHA_OPAQUE);
   SDL_RenderDrawPoints(sdl_renderer,pathWait,1024);  
@@ -371,99 +396,145 @@ cabCtr.h = 32;
   SDL_RenderDrawPoints(sdl_renderer,pathPista2,1536);
   SDL_RenderDrawPoints(sdl_renderer,pathPista3,1536);  
 
-/*
-SDL_Point puntos[] = {
-    {320, 200},
-    {300, 240},
-    {340, 240},
-    {320, 200} 
-};
-*/
+
+ //DRAW AIRPLANE//////////////////////////////////////////////////////
+
+  
+
+  switch(currentTrajectory){
+
+     case Trajectory::Fly:
+          if(changeTrajectory){
+              std::cout<<"Trajectory::Fly"<<std::endl;
+              changeTrajectory = false;
+              cycle = 1024;
+              distance = 0;
+              trajectoryPoint = 1024 - 1;            
+          }
+
+          cabCtr.x = pathFly[trajectoryPoint].x - 12; 
+          cabCtr.y = pathFly[trajectoryPoint].y - 12;
+
+          break;
+
+     case Trajectory::Arrive:          
+          if(changeTrajectory){
+              std::cout<<"Trajectory::Arrive"<<std::endl;
+              changeTrajectory = false;
+              cycle = 512;
+              distance = 0;
+              trajectoryPoint = 0;             
+          }                    
+          cabCtr.x = pathArrive[trajectoryPoint].x - 12; 
+          cabCtr.y = pathArrive[trajectoryPoint].y - 12;
+
+          break;
+
+     case Trajectory::Wait:
+           if(changeTrajectory){
+              std::cout<<"Trajectory::Wait"<<std::endl;
+              changeTrajectory = false;
+              cycle = 1024;
+              distance = 0;
+              trajectoryPoint = 0;  
+              isEnableTrack = false; //QUITAR            
+          }          
+          
+          cabCtr.x = pathWait[trajectoryPoint].x - 12; 
+          cabCtr.y = pathWait[trajectoryPoint].y - 12;              
+          break;
+
+     case Trajectory::TrackIzq:
+          if(changeTrajectory){
+            std::cout<<"Trajectory::TrackIzq"<<std::endl;
+              changeTrajectory = false;
+              cycle = 1536;
+              distance = 0;
+              trajectoryPoint = 0;              
+          }       
+          cabCtr.x = pathPista1[trajectoryPoint].x - 12; 
+          cabCtr.y = pathPista1[trajectoryPoint].y - 12;
+          break;
 
 
- 
+     case Trajectory::TrackCentral:
+          if(changeTrajectory){
+            std::cout<<"Trajectory::TrackIzq"<<std::endl;
+              changeTrajectory = false;
+              cycle = 1536;
+              distance = 0;
+              trajectoryPoint = 0;              
+          }       
+          cabCtr.x = pathPista2[trajectoryPoint].x - 12; 
+          cabCtr.y = pathPista2[trajectoryPoint].y - 12;
+          
+          break;
+     case Trajectory::TrackDer:
+         if(changeTrajectory){
+            std::cout<<"Trajectory::TrackIzq"<<std::endl;
+              changeTrajectory = false;
+              cycle = 1536;
+              distance = 0;
+              trajectoryPoint = 0;              
+          }       
+          cabCtr.x = pathPista3[trajectoryPoint].x - 12; 
+          cabCtr.y = pathPista3[trajectoryPoint].y - 12;
+          
+          break;
+     
+
+     
+
+    
+  }   
+
+
 
 
  SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0xff, 0xff, SDL_ALPHA_OPAQUE);
- cabCtr.x = pathFly[1024 - 1].x - 16; 
- cabCtr.y = pathFly[1024 - 1].y - 16;
- 
- SDL_RenderDrawLine(sdl_renderer, cabCtr.x, cabCtr.y ,  cabCtr.x + 16, cabCtr.y + 16);
+
+
+  
+
+
+ alaA[0].x = cabCtr.x + 6;
+ alaA[0].y = cabCtr.y;
+
+ alaA[1].x = cabCtr.x + 12;
+ alaA[1].y = cabCtr.y - 16;
+
+ alaA[2].x = cabCtr.x + 18;
+ alaA[2].y = cabCtr.y;
+
+
+ alaB[0].x = cabCtr.x + 6;
+ alaB[0].y = cabCtr.y + cabCtr.h;
+
+ alaB[1].x = cabCtr.x + 12;
+ alaB[1].y = cabCtr.y + cabCtr.h + 16;
+
+ alaB[2].x = cabCtr.x + 18;
+ alaB[2].y = cabCtr.y + cabCtr.h;
+
+ SDL_RenderDrawLine(sdl_renderer, cabCtr.x, cabCtr.y ,  cabCtr.x + 12, cabCtr.y + 12);
  SDL_RenderFillRect(sdl_renderer, &cabCtr);
+ SDL_RenderDrawLines(sdl_renderer, alaA, 3);
+ SDL_RenderDrawLines(sdl_renderer, alaB, 3);
 
-/**
- SDL_SetRenderDrawColor(sdl_renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
- SDL_RenderDrawLines(sdl_renderer, puntos, 4);
-
- SDL_RenderDrawLine(sdl_renderer, cabCtr.x , cabCtr.y,  cabCtr.x + 8, cabCtr.y - 32);
-
- */
-
-
- 
- 
-    //speed factor
-  
-  
-  /*   
-  cabCtr.x = points[Xini].x;
-  cabCtr.y = points[Xini].y;
- */
- 
+//DRAW AIRPLANE//////////////////////////////////////////////////////
 
   
-
-  /*
-  cabCtr.x = Xini;
-  cabCtr.y = Yini;
-  */
-
- /*
-  Xini += 2;
-
-  cabAtr.x = cabCtr.x-16;
-  cabAtr.y = cabCtr.y;
-
-  cabCola.x = cabAtr.x - 16;
-  cabCola.y = cabAtr.y;
-
-  cabDel.x = cabCtr.x + 16;
-  cabDel.y = cabCtr.y;
-
-  SDL_RenderDrawLine(sdl_renderer, cabCtr.x , cabCtr.y,  cabCtr.x + 8, cabCtr.y - 32);
-  SDL_RenderDrawLine(sdl_renderer, cabCtr.x + 16, cabCtr.y,  cabCtr.x + 8 , cabCtr.y - 32);
-  SDL_RenderDrawLine(sdl_renderer, cabCtr.x , cabCtr.y + 16,  cabCtr.x + 8, cabCtr.y + 48);
-  SDL_RenderDrawLine(sdl_renderer, cabCtr.x + 16, cabCtr.y + 16,  cabCtr.x + 8 , cabCtr.y + 48);
-
-  SDL_RenderDrawLine(sdl_renderer, cabCola.x , cabCola.y,  cabCola.x, cabCola.y - 16);
-  SDL_RenderDrawLine(sdl_renderer, cabCola.x + 16 , cabCola.y,  cabCola.x , cabCola.y - 16);
-
-  SDL_RenderDrawLine(sdl_renderer, cabDel.x + 16 , cabDel.y,  cabDel.x + 24, cabDel.y +  8);
-  SDL_RenderDrawLine(sdl_renderer, cabDel.x + 16 , cabDel.y + 16,  cabDel.x + 24 , cabDel.y + 8);
-
-
-  SDL_RenderFillRect(sdl_renderer, &cabCtr);
-  SDL_RenderFillRect(sdl_renderer, &cabAtr);
-  SDL_RenderFillRect(sdl_renderer, &cabDel);
-  SDL_RenderFillRect(sdl_renderer, &cabCola);
-
- */
-
 
 
   SDL_RenderPresent(sdl_renderer);
-
   SDL_SetWindowTitle(sdl_window, "Mi juego"); 
-
-
-    frame_end = SDL_GetTicks();
+  frame_end = SDL_GetTicks();
 
 
     // Keep track of how long each loop through the input/update/render cycle
     // takes.
     frame_count++;
     frame_duration = frame_end - frame_start;
-
     // After every second, update the window title.
     /*
     if (frame_end - title_timestamp >= 1000) {      
@@ -473,17 +544,60 @@ SDL_Point puntos[] = {
     // If the time for this frame is too small (i.e. frame_duration is
     // smaller than the target ms_per_frame), delay the loop to
     // achieve the correct frame rate.
+   
     if (frame_duration < kMsPerFrame) {
       SDL_Delay(kMsPerFrame - frame_duration);
     }
+    
+    bool endSimulation = false;
 
+    if(currentTrajectory== Trajectory::Fly)
+      trajectoryPoint -=2 ;     
+    else
+      trajectoryPoint +=2 ;     
+    
+    distance += 2;
+    if( !(distance < cycle)){
+        ;
 
-    /*
-    if(Xini > 2047)
-      break;
-    */
+         switch (currentTrajectory)
+         {
+         case Trajectory::Fly:
+              currentTrajectory=Trajectory::Arrive;       
+              break;
 
-//  }
+        case Trajectory::Arrive:
+        case Trajectory::Wait:
+              if(!isEnableTrack){ //Agregar funcionalidad Aleatoria
+                  currentTrajectory=Trajectory::TrackCentral;     
+                  /*
+                  currentTrajectory=Trajectory::TrackCentral;
+                  currentTrajectory=Trajectory::TrackCentral;
+                  */
+              }else
+              {
+                currentTrajectory=Trajectory::Wait;
+              }
+              break;
+        case Trajectory::TrackIzq:
+        case Trajectory::TrackCentral:
+        case Trajectory::TrackDer:
+              endSimulation = true;             
+              break;
+
+         default:
+           break;
+         }
+
+       changeTrajectory = true;
+        
+        
+    }
+    
+    if(endSimulation)
+          break;
+
+ }
 
 
 
@@ -498,7 +612,7 @@ SDL_Point puntos[] = {
 
    
     
-     SDL_Delay(7000);  // Pause execution for 3000 milliseconds, for example
+     //SDL_Delay(7000);  // Pause execution for 3000 milliseconds, for example
 
     // Close and destroy the window
     SDL_DestroyWindow(sdl_window);
