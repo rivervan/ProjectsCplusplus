@@ -2,12 +2,12 @@
 #include <iostream>
 #include <cmath>
 #include <memory>
+#include <map>
 
 #include "SDL.h"
 #include "sut.h"
 
-#include "airpath.h"
-
+#include "airplane.h"
 
 
 
@@ -59,50 +59,50 @@ int main() {
 
    //********************RENDERIZADO*************************************
 
-    //SDL_Point *pathFly = getPointsPathFly();
+    //VECTOR PATHS
+
+     std::map<TypePath, std::shared_ptr<AirPath>> pathsAirs;
 
 
      //Create Path arrive
-     AirPath arrivePath(-4,12);
-
-
+     pathsAirs[TypePath::LineArriving] = std::make_shared<AirPath>(-4,12);
+     
      //Create Path veer
      PointCartesian centerSemi(0,-2);
-     AirPath veerPath(centerSemi, 4,2,0);
-
+     pathsAirs[TypePath::CycleVeer]    = std::make_shared<AirPath>(centerSemi, 4,2,0);
+     
      //Create Path Wait
      PointCartesian centerWhole(0,2);
-     AirPath waitPath(centerWhole, 4,2,0, true);
-
-
+     pathsAirs[TypePath::CycleWait]    = std::make_shared<AirPath>(centerWhole, 4,2,0, true);
+     
       //Create Path Track Rigth
      PointCartesian centerTR(0,0);
-     AirPath TRPath(centerTR,-2, 12);
-
-
+     pathsAirs[TypePath::OnTrackRight] = std::make_shared<AirPath>(centerTR,-2, 12);
+     
      //Create Path Track Left
      PointCartesian centerTL(0,0);
-     AirPath TLPath(centerTL, 2, 12);
+     pathsAirs[TypePath::OnTrackLeft]  = std::make_shared<AirPath>(centerTL, 2, 12);
 
-
-     //Create Path Track left
-     //PointCartesian centerWhole(0,2);
-     //AirPath waitPath(centerWhole, 4,2,0, true);
-
+     //Create Path Track Center     
+     pathsAirs[TypePath::OnTrackCenter]     =  std::make_shared<AirPath>(0,12);
 
       
-      
-      std::cout<< "UseCount arrivePath: " << arrivePath.getPoints().use_count() << std::endl;       
-      std::cout<< "UseCount veerPath  : " << veerPath.getPoints().use_count() << std::endl;       
-      std::cout<< "UseCount waitPath  : " << waitPath.getPoints().use_count() << std::endl;       
-      std::cout<< "UseCount TRPath    : " << TRPath.getPoints().use_count() << std::endl;       
-      std::cout<< "UseCount TLPath    : " << TLPath.getPoints().use_count() << std::endl;       
+   
       /*
       for(auto i = 0; i < (TRPath.getLenPath() * Sut::sScale); i++){
          std::cout << TRPath.getPoints().get()[i].x  <<", "<< TRPath.getPoints().get()[i].y<< std::endl;
       }
       */
      
+int disIni =   0 ; 
+Position position (pathsAirs[TypePath::LineArriving],  pathsAirs[TypePath::LineArriving]->getPoints().get()[disIni]);
+AirPlane myPlane(std::move(position));
+
+
+while (true) {
+    frame_start = SDL_GetTicks();
+
+
 
 
     SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
@@ -119,13 +119,17 @@ int main() {
     
     
 
-  
-    SDL_RenderDrawPoints(sdl_renderer,arrivePath.getPoints().get(),arrivePath.getLenPath()*Sut::sScale );
-    SDL_RenderDrawPoints(sdl_renderer,veerPath.getPoints().get(),veerPath.getLenPath()*Sut::sScale );
-    SDL_RenderDrawPoints(sdl_renderer,waitPath.getPoints().get(),waitPath.getLenPath()*Sut::sScale );
-    SDL_RenderDrawPoints(sdl_renderer,TRPath.getPoints().get(),TRPath.getLenPath()*Sut::sScale );
-    SDL_RenderDrawPoints(sdl_renderer,TLPath.getPoints().get(),TLPath.getLenPath()*Sut::sScale );
+    SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xcc, 0xcc, SDL_ALPHA_OPAQUE);   
+
+    SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::LineArriving]->getPoints().get(),       pathsAirs[TypePath::LineArriving]->getLenPath()*Sut::sScale );
+    SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::CycleVeer]->getPoints().get(),          pathsAirs[TypePath::CycleVeer]->getLenPath()*Sut::sScale );
+    SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::CycleWait]->getPoints().get(),          pathsAirs[TypePath::CycleWait]->getLenPath()*Sut::sScale );
+    SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackRight]->getPoints().get(),       pathsAirs[TypePath::OnTrackRight]->getLenPath()*Sut::sScale );
+    SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackLeft]->getPoints().get(),        pathsAirs[TypePath::OnTrackLeft]->getLenPath()*Sut::sScale );        
+    SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackCenter]->getPoints().get(),      pathsAirs[TypePath::OnTrackCenter]->getLenPath()*Sut::sScale);
     
+     SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
+    myPlane.fly(sdl_renderer);
 
   //*****************************FIN*************************************
 
@@ -146,9 +150,15 @@ int main() {
     }
     
    
-   
+   std::cout << "distancia: " <<myPlane.getDistance()<< std::endl;
+   if(myPlane.getDistance() <= 0 )
+          break;
+
+ }
+
+
     
-    SDL_Delay(7000);  // Pause execution for 3000 milliseconds, for example
+    //SDL_Delay(7000);  // Pause execution for 3000 milliseconds, for example
 
     // Close and destroy the window
     SDL_DestroyWindow(sdl_window);

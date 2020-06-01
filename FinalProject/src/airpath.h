@@ -26,7 +26,7 @@ class AirPath{
 
       //Getters
       int getLenPath()const{return  _lenPath;};
-      TypePath getTypePath(int index)const{return _typePath;}
+      TypePath getTypePath()const{return _typePath;};
       std::shared_ptr<SDL_Point> getPoints()const{return _points;};
     
 
