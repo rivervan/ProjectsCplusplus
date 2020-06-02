@@ -47,7 +47,7 @@ class AirPlane{
         typedef int _SizeAirPlane;
 
         AirPlane()=default;
-        AirPlane(Position &&position, _SizeAirPlane sizeAirPlane = 24);
+        AirPlane(Position &&position, _SizeAirPlane sizeAirPlane = 24, int speedFactor=1);
                
 
         bool getIsPathFinish()const{return _isPathFinish;};
@@ -69,6 +69,7 @@ class AirPlane{
 
       //Members of control
       bool _isPathFinish{false};
+      int _speedFactor;
 
 
 

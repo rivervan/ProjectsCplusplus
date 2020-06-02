@@ -31,10 +31,12 @@ Position& Position::operator=(Position &&src){
 
 ////////////AIRPLANE DEFINITION//////////////////
 
-AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane){
+AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane, int speedFactor){
     _position = std::move(position);
     _cabCtr.w = sizeAirPlane;
     _cabCtr.h = sizeAirPlane;
+
+    _speedFactor = speedFactor;
 
 
     //Place to airplain on start point of path
@@ -60,7 +62,14 @@ void AirPlane::simulate(){
 
 
 
-       _position._currentIndexPoint++;
+       _position._currentIndexPoint+=_speedFactor;
+        if( _position._currentIndexPoint >= _position._currentPath->getIndexEndPoint() ){
+            _position._currentIndexPoint = _position._currentPath->getIndexEndPoint();
+            _isPathFinish = true;            
+       }
+
+
+
        SDL_Point pointOfFly = _position._currentPath->getPoints().get()[_position._currentIndexPoint];           
 
 
@@ -68,9 +77,7 @@ void AirPlane::simulate(){
        drawAirPlane(pointOfFly);
 
 
-       if( _position._currentIndexPoint >= _position._currentPath->getIndexEndPoint() ){
-            _isPathFinish = true;            
-       }
+      
          
 
    }

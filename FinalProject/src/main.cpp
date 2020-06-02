@@ -96,7 +96,7 @@ int main() {
      
 
 Position position (pathsAirs[TypePath::LineArriving], 0);
-AirPlane myPlane(std::move(position), 24);
+AirPlane myPlane(std::move(position));
 
 
 while (true) {
