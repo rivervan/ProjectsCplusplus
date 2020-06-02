@@ -16,21 +16,23 @@
 class Position
 {
 
+ 
+
     public:        
         
          Position()=default;
-         Position(std::shared_ptr<AirPath> newPath, SDL_Point newPoint);
-         Position &operator=( Position &&src);
-
+         Position(std::shared_ptr<AirPath> newPath, AirPath::_IndexPointOnPath indexPointOnPath);
+         Position &operator=( Position &&src);         
         
          
-         void MoveCurrentPointToNewPointOnPath(SDL_Point newPoint);
+         friend class AirPlane;
 
-         std::shared_ptr<AirPath> _currentPath;
-         SDL_Point _currentPoint;    
-         int _currenIndexPoint{0};
-         
+                  
+     private: 
 
+         std::shared_ptr<AirPath> _currentPath;                       
+         AirPath::_IndexPointOnPath _currentIndexPoint{0};
+                    
 };
  
 
@@ -39,28 +41,39 @@ class Position
 
 class AirPlane{
 
+
+
   public:
+        typedef int _SizeAirPlane;
 
         AirPlane()=default;
-        AirPlane(Position &&position);
-       
-        void fly(SDL_Renderer *sdl_renderer);
+        AirPlane(Position &&position, _SizeAirPlane sizeAirPlane = 24);
+               
+
+        bool getIsPathFinish()const{return _isPathFinish;};
+
+
+        void RenderAirplane(SDL_Renderer *sdl_renderer);
         void simulate();
-        int getDistance()const{return _distance;};
-        
-         
-    
+                        
   
    private:
-
+  
       Position _position;
-
+    
+      //Shape of plane
       SDL_Rect _cabCtr;
       SDL_Point _wingBottom[3];
       SDL_Point _wingTop[3];
-      int _distance{0};
-      
 
+
+      //Members of control
+      bool _isPathFinish{false};
+
+
+
+      //Help functions
+      void drawAirPlane(const SDL_Point &currentPoint);
 
 
 

@@ -12,6 +12,11 @@ AirPath::AirPath(int b, int x0){
       _typePath = TypePath::LineArriving;
       _lenPath  = x0;
       _points   = getPointsLineArrivePath(_lenPath,b,x0);
+
+     _startPoint = 0; //Ready to  paths with variable direction
+     _endPoint   = _lenPath * Sut::sScale - 1;
+
+
 }
 
 
@@ -29,6 +34,8 @@ AirPath::AirPath(const PointCartesian& center, int Ax, int By, int x0, bool isWh
 
     }
    
+    _startPoint = 0; //Ready to  paths with variable direction
+     _endPoint   = _lenPath  * Sut::sScale - 1;
     
 
 }
@@ -47,6 +54,8 @@ AirPath::AirPath(const PointCartesian& center,  int P, int length){
      _points   = getPointsLateralTrack(_lenPath, center, P);
     
 
+    _startPoint = 0; //Ready to  paths with variable direction
+    _endPoint   = _lenPath  * Sut::sScale - 1;
 }
 
 

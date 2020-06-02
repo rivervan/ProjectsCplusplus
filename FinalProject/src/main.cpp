@@ -94,9 +94,9 @@ int main() {
       }
       */
      
-int disIni =   0 ; 
-Position position (pathsAirs[TypePath::LineArriving],  pathsAirs[TypePath::LineArriving]->getPoints().get()[disIni]);
-AirPlane myPlane(std::move(position));
+
+Position position (pathsAirs[TypePath::LineArriving], 0);
+AirPlane myPlane(std::move(position), 24);
 
 
 while (true) {
@@ -128,8 +128,14 @@ while (true) {
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackLeft]->getPoints().get(),        pathsAirs[TypePath::OnTrackLeft]->getLenPath()*Sut::sScale );        
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackCenter]->getPoints().get(),      pathsAirs[TypePath::OnTrackCenter]->getLenPath()*Sut::sScale);
     
+
+     
+
      SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
-    myPlane.fly(sdl_renderer);
+     myPlane.simulate();
+     myPlane.RenderAirplane(sdl_renderer);
+
+
 
   //*****************************FIN*************************************
 
@@ -150,15 +156,16 @@ while (true) {
     }
     
    
-   std::cout << "distancia: " <<myPlane.getDistance()<< std::endl;
-   if(myPlane.getDistance() <= 0 )
-          break;
+
+     if (myPlane.getIsPathFinish())
+         break;
+
 
  }
 
 
     
-    //SDL_Delay(7000);  // Pause execution for 3000 milliseconds, for example
+    SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
 
     // Close and destroy the window
     SDL_DestroyWindow(sdl_window);
