@@ -19,10 +19,22 @@ struct PointCartesian
 };
 
 
+
+
+
 class Sut{
 
-
    public: 
+
+      enum TypeDecision{
+        Rail1=1,
+        Rail2=2,
+        Rail3=3,
+        Wait =4
+
+      };
+
+
       
      static float constexpr  PI = 3.1415926;
      static int constexpr  sScale = 48;  //32
@@ -36,7 +48,10 @@ class Sut{
     static constexpr std::size_t OriginAxisX{384};       //256
     static constexpr std::size_t OriginAxisY{512};       //512
   
-     static SDL_Point  getTraslatePointScreen(int x, int y, int xso, int yso);
+    static SDL_Point  getTraslatePointScreen(int x, int y, int xso, int yso);
+
+    static TypeDecision getFollowWay();
+
      
 
   private:

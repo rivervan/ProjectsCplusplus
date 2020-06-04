@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "airpath.h"
+#include <map>
 
 #include "SDL.h"
 
@@ -21,17 +22,23 @@ class Position
     public:        
         
          Position()=default;
-         Position(std::shared_ptr<AirPath> newPath, AirPath::_IndexPointOnPath indexPointOnPath);
+         Position(std::map<TypePath, std::shared_ptr<AirPath>> &paths, TypePath typePath, AirPath::_IndexPointOnPath indexPointOnPath);
          Position &operator=( Position &&src);         
         
          
+
          friend class AirPlane;
 
                   
      private: 
+         
+        //std::map<TypePath, std::shared_ptr<AirPath>>  _paths; 
+        std::map<TypePath, std::shared_ptr<AirPath>>  _paths; 
 
          std::shared_ptr<AirPath> _currentPath;                       
          AirPath::_IndexPointOnPath _currentIndexPoint{0};
+         
+         
                     
 };
  
@@ -51,6 +58,7 @@ class AirPlane{
                
 
         bool getIsPathFinish()const{return _isPathFinish;};
+        bool getIsEndTrip()const{return _isEndTrip;};
 
 
         void RenderAirplane(SDL_Renderer *sdl_renderer);
@@ -70,6 +78,7 @@ class AirPlane{
       //Members of control
       bool _isPathFinish{false};
       int _speedFactor;
+      bool _isEndTrip;
 
 
 

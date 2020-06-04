@@ -6,10 +6,14 @@
 
 ////////////POSITION DEFINITION//////////////////
 
-Position::Position(std::shared_ptr<AirPath> newPath, AirPath::_IndexPointOnPath indexPointOnPath){
-          _currentPath   = newPath;       
-     _currentIndexPoint  = indexPointOnPath;
-        
+Position::Position( std::map<TypePath, std::shared_ptr<AirPath>>  &paths, TypePath typePath, AirPath::_IndexPointOnPath indexPointOnPath){
+                _paths   = paths;  //spetial review learning           
+                std::cout<<"HOLA 2 Position: "<< &paths<<"\n";
+                std::cout<<"HOLA 3 Position: "<< &_paths<<"\n";
+                
+
+          _currentPath   = _paths[typePath];                            
+     _currentIndexPoint  = indexPointOnPath;                     
 }
 
 
@@ -20,8 +24,11 @@ Position& Position::operator=(Position &&src){
        return *this;
                   
     _currentPath       = src._currentPath;
-    _currentIndexPoint = src._currentIndexPoint; 
-    src._currentPath   = nullptr;                     
+    _currentIndexPoint = src._currentIndexPoint;    
+                _paths = src._paths; 
+    src._currentPath   = nullptr;    
+    
+
     return *this;
 
   }   
@@ -33,11 +40,13 @@ Position& Position::operator=(Position &&src){
 
 AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane, int speedFactor){
     _position = std::move(position);
+     std::cout<<"HOLA 4 AirPlane: "<< &_position._paths<<"\n";
     _cabCtr.w = sizeAirPlane;
     _cabCtr.h = sizeAirPlane;
 
     _speedFactor = speedFactor;
 
+     _isEndTrip = false;
 
     //Place to airplain on start point of path
     SDL_Point currentPoint = _position._currentPath->getPoints().get()[_position._currentIndexPoint];
@@ -59,23 +68,87 @@ AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane, int speedFac
 
 
 void AirPlane::simulate(){
+    
+     
+    
 
+    //1. Verify if the airplane arrived to end 
+        if( (_position._currentIndexPoint + _speedFactor) >= _position._currentPath->getIndexEndPoint() )
+        {            
+            _position._currentIndexPoint = _position._currentPath->getIndexEndPoint();            
+            _isPathFinish = true;    
 
+        }
+        else{
+            //Move airplane
+            _position._currentIndexPoint+=_speedFactor;                
+            //Get current point on current path
+            SDL_Point pointOfFly = _position._currentPath->getPoints().get()[_position._currentIndexPoint];            
+            //Draw airplane on path 
+            drawAirPlane(pointOfFly);            
 
-       _position._currentIndexPoint+=_speedFactor;
-        if( _position._currentIndexPoint >= _position._currentPath->getIndexEndPoint() ){
-            _position._currentIndexPoint = _position._currentPath->getIndexEndPoint();
-            _isPathFinish = true;            
+        }
+        
+       
+
+       if (_isEndTrip == true){                               
+           return; 
        }
 
+        
+       
+     // std::cout<<"endPOINT: " << _position._currentPath->getIndexEndPoint() << "," << _position._currentIndexPoint;            
+    //2. Change path      
+    if(_isPathFinish == true){
+         
+        auto opt = _position._currentPath->getTypePath();
+       
+        switch(opt){
+          
+            case TypePath::LineArriving:                                             
+               _position._currentPath =  _position._paths[TypePath::CycleVeer] ;               
+               _position._currentIndexPoint = _position._currentPath->getIndexStartPoint();
+               _isPathFinish = false;
+               _isEndTrip = false;                 
+               break;
+            case TypePath::CycleVeer:
+            case TypePath::CycleWait:                          
+                switch (Sut::getFollowWay())                
+                {
+                    case Sut::TypeDecision::Wait:                    
+                        _position._currentPath = _position._paths[TypePath::CycleWait];                        
+                        _isEndTrip = false;
+                        break;                
+                    case Sut::TypeDecision::Rail1:                    
+                        _position._currentPath =  _position._paths[TypePath::OnTrackLeft];                        
+                        _isEndTrip = false;
+                        break;                
+                    case Sut::TypeDecision::Rail2:                    
+                        _position._currentPath =  _position._paths[TypePath::OnTrackCenter];                        
+                        _isEndTrip = false;
+                        break;                
+                    case Sut::TypeDecision::Rail3:                    
+                        _position._currentPath =  _position._paths[TypePath::OnTrackRight];                        
+                        _isEndTrip = false;
+                        break;                
+                }
+                _isPathFinish = false;
+                _position._currentIndexPoint = 0;
+                break;         
 
+            case TypePath::OnTrackLeft:                     
+            case TypePath::OnTrackCenter:              
+            case TypePath::OnTrackRight:
+                _position._currentPath =  nullptr;                         
+                _isPathFinish = true;
+                _isEndTrip = true;
+                                
+            //case TypePath::LineRail:
+            break;         
+        }   
 
-       SDL_Point pointOfFly = _position._currentPath->getPoints().get()[_position._currentIndexPoint];           
-
-
-
-       drawAirPlane(pointOfFly);
-
+    }
+      
 
       
          

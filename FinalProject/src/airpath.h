@@ -1,4 +1,6 @@
 #include<memory>
+
+
 #include "SDL.h"
 #include "sut.h"
 
@@ -12,20 +14,28 @@ enum TypePath{
     LineRail
 };
 
-
+enum Sense{
+  Right,
+  Left,
+  Top,
+  Buttom
+};
 
 
 class AirPath{
   
- 
-
   public:
+
+      
+      
+
       typedef int _IndexPointOnPath;
 
       //Constructors
       AirPath()=default;
 
-      AirPath(int b, int x0);
+      AirPath(int lenPath, int b, int x0, Sense sense = Sense::Right);
+      AirPath(AirPath &&src);
       AirPath(const PointCartesian& center, int Ax, int By, int x0, bool isWhole = false);
       AirPath(const PointCartesian& center,  int P, int length);
 
@@ -49,7 +59,7 @@ class AirPath{
      _IndexPointOnPath _startPoint;
      _IndexPointOnPath _endPoint;
 
-     std::shared_ptr<SDL_Point> getPointsLineArrivePath(int lenPath, int b, int x0);    
+     std::shared_ptr<SDL_Point> getPointsLineArrivePath(int lenPath, int b, int x0, Sense sense);    
      std::shared_ptr<SDL_Point> getPointsCycleVeerPath(int lenPath, PointCartesian center, int Ax, int By, int x0);
      std::shared_ptr<SDL_Point> getPointsCycleWaitPath(int lenPath, PointCartesian center, int Ax, int By, int x0);
      std::shared_ptr<SDL_Point> getPointsLateralTrack(int lenPath, PointCartesian center, int P);

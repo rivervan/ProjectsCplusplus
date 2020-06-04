@@ -1,5 +1,9 @@
+#include <random>
+
 #include "SDL.h"
 #include "sut.h"
+
+
 
 
 
@@ -14,3 +18,33 @@
 }
 
 
+Sut::TypeDecision Sut::getFollowWay(){   
+      std::random_device rd;
+      std::mt19937 eng(rd());
+      std::uniform_int_distribution<> distr(1, 4);
+      int wayDecision = distr(eng);
+      TypeDecision value;
+
+      switch (wayDecision)
+      {
+        case 1:
+            value = TypeDecision::Rail1;             
+            break;
+      
+        case 2:
+            value = TypeDecision::Rail2;
+            break;
+
+        case 3:
+            value = TypeDecision::Rail3;
+            break;
+
+        case 4:
+            value = TypeDecision::Wait;
+            break;      
+      }
+
+      std::cout<<"HOLA random: "<< value <<"\n";                               
+      return value;
+
+}

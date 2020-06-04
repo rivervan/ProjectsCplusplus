@@ -61,43 +61,47 @@ int main() {
 
     //VECTOR PATHS
 
-     std::map<TypePath, std::shared_ptr<AirPath>> pathsAirs;
-
-
-     //Create Path arrive
-     pathsAirs[TypePath::LineArriving] = std::make_shared<AirPath>(-4,12);
+    
+     std::map<TypePath, std::shared_ptr<AirPath>> pathsAirs;    
      
+
+    
+     //Create Path arrive
+     pathsAirs[TypePath::LineArriving] = std::make_shared<AirPath>(12,-4,12,Sense::Left);
+         
+      
+      
      //Create Path veer
      PointCartesian centerSemi(0,-2);
      pathsAirs[TypePath::CycleVeer]    = std::make_shared<AirPath>(centerSemi, 4,2,0);
+     
+
      
      //Create Path Wait
      PointCartesian centerWhole(0,2);
      pathsAirs[TypePath::CycleWait]    = std::make_shared<AirPath>(centerWhole, 4,2,0, true);
      
+
       //Create Path Track Rigth
      PointCartesian centerTR(0,0);
      pathsAirs[TypePath::OnTrackRight] = std::make_shared<AirPath>(centerTR,-2, 12);
      
+     
      //Create Path Track Left
      PointCartesian centerTL(0,0);
      pathsAirs[TypePath::OnTrackLeft]  = std::make_shared<AirPath>(centerTL, 2, 12);
-
-     //Create Path Track Center     
-     pathsAirs[TypePath::OnTrackCenter]     =  std::make_shared<AirPath>(0,12);
-
-      
-   
-      /*
-      for(auto i = 0; i < (TRPath.getLenPath() * Sut::sScale); i++){
-         std::cout << TRPath.getPoints().get()[i].x  <<", "<< TRPath.getPoints().get()[i].y<< std::endl;
-      }
-      */
      
 
-Position position (pathsAirs[TypePath::LineArriving], 0);
-AirPlane myPlane(std::move(position));
+     //Create Path Track Center          
+     pathsAirs[TypePath::OnTrackCenter]     =  std::make_shared<AirPath>(12,0,0, Sense::Right);
+     
+     
+     
 
+//TypePath typePath = TypePath::LineArriving;
+
+Position position (pathsAirs, TypePath::LineArriving, 0);
+AirPlane myPlane(std::move(position),24,3);
 
 while (true) {
     frame_start = SDL_GetTicks();
@@ -121,6 +125,9 @@ while (true) {
 
     SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xcc, 0xcc, SDL_ALPHA_OPAQUE);   
 
+
+                                       
+                                       
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::LineArriving]->getPoints().get(),       pathsAirs[TypePath::LineArriving]->getLenPath()*Sut::sScale );
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::CycleVeer]->getPoints().get(),          pathsAirs[TypePath::CycleVeer]->getLenPath()*Sut::sScale );
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::CycleWait]->getPoints().get(),          pathsAirs[TypePath::CycleWait]->getLenPath()*Sut::sScale );
@@ -128,11 +135,12 @@ while (true) {
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackLeft]->getPoints().get(),        pathsAirs[TypePath::OnTrackLeft]->getLenPath()*Sut::sScale );        
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackCenter]->getPoints().get(),      pathsAirs[TypePath::OnTrackCenter]->getLenPath()*Sut::sScale);
     
-
-     
+     //FLYING AIRPLANE
 
      SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
      myPlane.simulate();
+   
+
      myPlane.RenderAirplane(sdl_renderer);
 
 
@@ -157,7 +165,7 @@ while (true) {
     
    
 
-     if (myPlane.getIsPathFinish())
+     if (myPlane.getIsEndTrip())
          break;
 
 

@@ -8,16 +8,46 @@
 
 
 
-AirPath::AirPath(int b, int x0){
-      _typePath = TypePath::LineArriving;
-      _lenPath  = x0;
-      _points   = getPointsLineArrivePath(_lenPath,b,x0);
+AirPath::AirPath(int lenPath, int b, int x0, Sense sense){
 
+      if(sense == Sense::Right)
+        _typePath = TypePath::OnTrackCenter;
+      else
+        _typePath = TypePath::LineArriving;
+    
+    
+      _lenPath  = lenPath;
+      _points   = getPointsLineArrivePath(_lenPath,b,x0,sense);      
      _startPoint = 0; //Ready to  paths with variable direction
      _endPoint   = _lenPath * Sut::sScale - 1;
 
 
 }
+
+
+
+AirPath::AirPath(AirPath &&src){
+      _typePath = src._typePath;
+      _lenPath  = src._lenPath;
+      _points   = src._points;
+
+
+      
+     _startPoint = src._startPoint; //Ready to  paths with variable direction
+     _endPoint   = src._endPoint;
+
+
+     src._points = nullptr;
+     src._lenPath = 0;
+     src._startPoint = 0;
+     src._endPoint = 0;
+
+
+
+
+}
+
+
 
 
 AirPath::AirPath(const PointCartesian& center, int Ax, int By, int x0, bool isWhole ){
@@ -60,22 +90,35 @@ AirPath::AirPath(const PointCartesian& center,  int P, int length){
 
 
 
-
-
 //Get points on screen for Arriving
-std::shared_ptr<SDL_Point> AirPath::getPointsLineArrivePath(int lenPath, int b, int x0){
-
-   std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]);
-
-   int xScreen =  x0 * Sut::sScale;
+std::shared_ptr<SDL_Point> AirPath::getPointsLineArrivePath(int lenPath, int b, int x0, Sense sense){   
+   std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]);   
+   int xScreen =  x0 * Sut::sScale;   
    int yScreen =  b  * Sut::sScale;     
-   int xScreenMax = xScreen;
+   int xScreenMax = lenPath * Sut::sScale;
+
+   
       
    for(auto i = 0; i < xScreenMax; i++){                               
      points.get()[i] = Sut::getTraslatePointScreen(xScreen,yScreen,Sut::OriginAxisX,Sut::OriginAxisY);      
-     xScreen--;
+     
+       switch (sense)
+       {
+            case Sense::Right:
+                xScreen++;
+                 break;
+            case Sense::Left:
+                xScreen--;
+                break;       
+            default:
+                break;
+       }
+     
+        
    }    
-    return std::move(points);    
+
+    
+    return points;    
   }
 
 
