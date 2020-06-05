@@ -8,10 +8,6 @@
 
 Position::Position( std::map<TypePath, std::shared_ptr<AirPath>>  &paths, TypePath typePath, AirPath::_IndexPointOnPath indexPointOnPath){
                 _paths   = paths;  //spetial review learning           
-                std::cout<<"HOLA 2 Position: "<< &paths<<"\n";
-                std::cout<<"HOLA 3 Position: "<< &_paths<<"\n";
-                
-
           _currentPath   = _paths[typePath];                            
      _currentIndexPoint  = indexPointOnPath;                     
 }
@@ -39,8 +35,7 @@ Position& Position::operator=(Position &&src){
 ////////////AIRPLANE DEFINITION//////////////////
 
 AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane, int speedFactor){
-    _position = std::move(position);
-     std::cout<<"HOLA 4 AirPlane: "<< &_position._paths<<"\n";
+    _position = std::move(position);     
     _cabCtr.w = sizeAirPlane;
     _cabCtr.h = sizeAirPlane;
 
@@ -80,8 +75,24 @@ void AirPlane::simulate(){
 
         }
         else{
-            //Move airplane
-            _position._currentIndexPoint+=_speedFactor;                
+            //Move 
+             
+             switch (_position._currentPath->getTypePath())
+             {
+             case TypePath::OnTrackLeft:
+             case TypePath::OnTrackCenter :
+             case TypePath::OnTrackRight :
+
+                  if(_position._currentIndexPoint > 2*(_position._currentPath->getIndexEndPoint()) / 3)
+                     
+                 _speedFactor = 1; 
+                 break;             
+             default:                
+                 break;
+             }
+             
+            _position._currentIndexPoint+=_speedFactor; 
+                           
             //Get current point on current path
             SDL_Point pointOfFly = _position._currentPath->getPoints().get()[_position._currentIndexPoint];            
             //Draw airplane on path 
@@ -117,19 +128,19 @@ void AirPlane::simulate(){
                 {
                     case Sut::TypeDecision::Wait:                    
                         _position._currentPath = _position._paths[TypePath::CycleWait];                        
-                        _isEndTrip = false;
+                        _isEndTrip = false;                        
                         break;                
                     case Sut::TypeDecision::Rail1:                    
-                        _position._currentPath =  _position._paths[TypePath::OnTrackLeft];                        
-                        _isEndTrip = false;
+                        _position._currentPath =  _position._paths[TypePath::OnTrackLeft];                                                
+                        _isEndTrip = false;                        
                         break;                
                     case Sut::TypeDecision::Rail2:                    
                         _position._currentPath =  _position._paths[TypePath::OnTrackCenter];                        
-                        _isEndTrip = false;
+                        _isEndTrip = false;                        
                         break;                
                     case Sut::TypeDecision::Rail3:                    
                         _position._currentPath =  _position._paths[TypePath::OnTrackRight];                        
-                        _isEndTrip = false;
+                        _isEndTrip = false;                        
                         break;                
                 }
                 _isPathFinish = false;
@@ -138,7 +149,7 @@ void AirPlane::simulate(){
 
             case TypePath::OnTrackLeft:                     
             case TypePath::OnTrackCenter:              
-            case TypePath::OnTrackRight:
+            case TypePath::OnTrackRight:                                  
                 _position._currentPath =  nullptr;                         
                 _isPathFinish = true;
                 _isEndTrip = true;

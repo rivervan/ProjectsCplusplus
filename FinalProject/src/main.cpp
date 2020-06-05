@@ -3,11 +3,13 @@
 #include <cmath>
 #include <memory>
 #include <map>
+#include <vector>
 
 #include "SDL.h"
 #include "sut.h"
 
-#include "airplane.h"
+#include "atc.h"
+//#include "airplane.h"
 
 
 
@@ -59,55 +61,53 @@ int main() {
 
    //********************RENDERIZADO*************************************
 
-    //VECTOR PATHS
+    std::map<TypePath, std::shared_ptr<AirPath>> pathsAirs;   
+    std::vector<std::shared_ptr<AirPlane>> planes;
 
-    
-     std::map<TypePath, std::shared_ptr<AirPath>> pathsAirs;    
-     
 
-    
+
+
+    //Create PATHS
+               
      //Create Path arrive
      pathsAirs[TypePath::LineArriving] = std::make_shared<AirPath>(12,-4,12,Sense::Left);
-         
-      
-      
+                   
      //Create Path veer
      PointCartesian centerSemi(0,-2);
      pathsAirs[TypePath::CycleVeer]    = std::make_shared<AirPath>(centerSemi, 4,2,0);
-     
-
-     
+          
      //Create Path Wait
      PointCartesian centerWhole(0,2);
      pathsAirs[TypePath::CycleWait]    = std::make_shared<AirPath>(centerWhole, 4,2,0, true);
      
-
       //Create Path Track Rigth
      PointCartesian centerTR(0,0);
      pathsAirs[TypePath::OnTrackRight] = std::make_shared<AirPath>(centerTR,-2, 12);
-     
-     
+          
      //Create Path Track Left
      PointCartesian centerTL(0,0);
      pathsAirs[TypePath::OnTrackLeft]  = std::make_shared<AirPath>(centerTL, 2, 12);
      
-
      //Create Path Track Center          
-     pathsAirs[TypePath::OnTrackCenter]     =  std::make_shared<AirPath>(12,0,0, Sense::Right);
+     pathsAirs[TypePath::OnTrackCenter] =  std::make_shared<AirPath>(12,0,0, Sense::Right);
      
      
      
 
-//TypePath typePath = TypePath::LineArriving;
 
-Position position (pathsAirs, TypePath::LineArriving, 0);
-AirPlane myPlane(std::move(position),24,3);
+Atc atc; 
+bool running = true;
 
-while (true) {
+
+while (running) {
     frame_start = SDL_GetTicks();
 
 
 
+     atc.recivePlaneAirApaceIN(running, pathsAirs,planes);
+     
+     
+    
 
     SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
     SDL_RenderClear(sdl_renderer);
@@ -117,10 +117,7 @@ while (true) {
     SDL_RenderDrawLine(sdl_renderer,Sut::OriginAxisX,0, Sut::OriginAxisX, Sut::kScreenHeight);
     SDL_RenderDrawLine(sdl_renderer, 0,Sut::OriginAxisY,Sut::kScreenWidth,Sut::OriginAxisY);
 
-    
-    
-    //std::cout<< arrivePath.getPoints().use_count()  << std::endl;
-    
+      
     
 
     SDL_SetRenderDrawColor(sdl_renderer, 0x00, 0xcc, 0xcc, SDL_ALPHA_OPAQUE);   
@@ -138,10 +135,34 @@ while (true) {
      //FLYING AIRPLANE
 
      SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
-     myPlane.simulate();
+
+
+     auto it = planes.begin();
+     while(it!=planes.end()){
+        
+         if( (*it)->getIsEndTrip()){
+              planes.erase(it);
+              if(planes.size() <= 0 ){
+                running = false;
+                break;
+              }
+              
+         }else
+         {
+            (*it)->simulate();
+            (*it)->RenderAirplane(sdl_renderer);
+         }
+         it++;
+    
+     }
+
+
+  
+
+     //myPlane.simulate();
    
 
-     myPlane.RenderAirplane(sdl_renderer);
+     //myPlane.RenderAirplane(sdl_renderer);
 
 
 
@@ -164,10 +185,10 @@ while (true) {
     }
     
    
-
-     if (myPlane.getIsEndTrip())
+     /*
+    if (myPlane.getIsEndTrip())
          break;
-
+    */
 
  }
 

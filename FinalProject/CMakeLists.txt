@@ -15,7 +15,7 @@ find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS} src)
 
 
-add_executable(MyGame src/main.cpp src/airpath.cpp src/sut.cpp src/airplane.cpp)
+add_executable(MyGame src/main.cpp src/airpath.cpp src/sut.cpp src/airplane.cpp src/atc.cpp)
 
 string(STRIP ${SDL2_LIBRARIES} SDL2_LIBRARIES)
 target_link_libraries(MyGame ${SDL2_LIBRARIES})
