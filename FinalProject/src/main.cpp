@@ -7,46 +7,43 @@
 
 #include "SDL.h"
 #include "sut.h"
-
 #include "atc.h"
-//#include "airplane.h"
+
 
 
 
 
 int main() {
 
-
+ 
   
 
   SDL_Renderer *sdl_renderer;
   SDL_Window *sdl_window;
 
 
-  //****************************************************
-    // Initialize SDL
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-      std::cerr << "SDL could not initialize.\n";
-      std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
-    }
+  
+  // Initialize SDL
+  if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    std::cerr << "SDL could not initialize.\n";
+    std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
+  }
 
-    // Create Window
-    sdl_window = SDL_CreateWindow("Mi Game", SDL_WINDOWPOS_CENTERED,
+  // Create Window
+  sdl_window = SDL_CreateWindow("Mi Game", SDL_WINDOWPOS_CENTERED,
                                   SDL_WINDOWPOS_CENTERED, Sut::kScreenWidth, Sut::kScreenHeight, SDL_WINDOW_SHOWN);
 
-    if (nullptr == sdl_window) {
-      std::cerr << "Window could not be created.\n";
-      std::cerr << " SDL_Error: " << SDL_GetError() << "\n";
-    }
+  if (nullptr == sdl_window) {
+    std::cerr << "Window could not be created.\n";
+    std::cerr << " SDL_Error: " << SDL_GetError() << "\n";
+  }
 
-    // Create renderer
-    sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
-    if (nullptr == sdl_renderer) {
-      std::cerr << "Renderer could not be created.\n";
-      std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
-    }
-
- //****************************************************
+  // Create renderer
+  sdl_renderer = SDL_CreateRenderer(sdl_window, -1, SDL_RENDERER_ACCELERATED);
+  if (nullptr == sdl_renderer) {
+    std::cerr << "Renderer could not be created.\n";
+    std::cerr << "SDL_Error: " << SDL_GetError() << "\n";
+  }
 
 
 
@@ -59,57 +56,71 @@ int main() {
   
 
 
-   //********************RENDERIZADO*************************************
 
-    std::map<TypePath, std::shared_ptr<AirPath>> pathsAirs;   
-    std::vector<std::shared_ptr<AirPlane>> planes;
-
+  std::map<TypePath, std::shared_ptr<AirPath>> pathsAirs;   
+  std::vector<std::shared_ptr<AirPlane>> planes;
 
 
 
-    //Create PATHS
+
+  //Create PATHS
                
-     //Create Path arrive
-     pathsAirs[TypePath::LineArriving] = std::make_shared<AirPath>(12,-4,12,Sense::Left);
+  //Create Path arrive
+  pathsAirs[TypePath::LineArriving]  = std::make_shared<AirPath>(12,-4,12,Sense::Left);
                    
-     //Create Path veer
-     PointCartesian centerSemi(0,-2);
-     pathsAirs[TypePath::CycleVeer]    = std::make_shared<AirPath>(centerSemi, 4,2,0);
+  //Create Path veer
+  PointCartesian centerSemi(0,-2);
+  pathsAirs[TypePath::CycleVeer]     = std::make_shared<AirPath>(centerSemi, 4,2,0);
           
-     //Create Path Wait
-     PointCartesian centerWhole(0,2);
-     pathsAirs[TypePath::CycleWait]    = std::make_shared<AirPath>(centerWhole, 4,2,0, true);
+  //Create Path Wait
+  PointCartesian centerWhole(0,4);
+  pathsAirs[TypePath::CycleWait]     = std::make_shared<AirPath>(centerWhole, 6,4,0, true);
      
-      //Create Path Track Rigth
-     PointCartesian centerTR(0,0);
-     pathsAirs[TypePath::OnTrackRight] = std::make_shared<AirPath>(centerTR,-2, 12);
+  //Create Path Track Rigth
+  PointCartesian centerTR(0,0);
+  pathsAirs[TypePath::OnTrackRight]  = std::make_shared<AirPath>(centerTR,-2, 12);
           
-     //Create Path Track Left
-     PointCartesian centerTL(0,0);
-     pathsAirs[TypePath::OnTrackLeft]  = std::make_shared<AirPath>(centerTL, 2, 12);
+  //Create Path Track Left
+  PointCartesian centerTL(0,0);
+  pathsAirs[TypePath::OnTrackLeft]   = std::make_shared<AirPath>(centerTL, 2, 12);
      
-     //Create Path Track Center          
-     pathsAirs[TypePath::OnTrackCenter] =  std::make_shared<AirPath>(12,0,0, Sense::Right);
+  //Create Path Track Center          
+  pathsAirs[TypePath::OnTrackCenter] =  std::make_shared<AirPath>(12,0,0, Sense::Right);
      
      
      
 
 
-Atc atc; 
+
+std::shared_ptr<Atc> atc(new Atc);
 bool running = true;
 
-
+SDL_Event e;
+int countEnable = 0;
+ 
 while (running) {
     frame_start = SDL_GetTicks();
 
 
+      
+    while (SDL_PollEvent(&e)) 
+    {
+      if (e.type == SDL_KEYDOWN && e.key.keysym.sym== SDLK_RIGHT) {
+        running = false;
 
-     atc.recivePlaneAirApaceIN(running, pathsAirs,planes);
-     
+      } 
+      else {
+         if (e.type == SDL_KEYDOWN && e.key.keysym.sym== SDLK_LEFT) {            
+              std::future<void> future;
+              Position position (pathsAirs, TypePath::LineArriving, 0);                                              
+              atc->recivePlaneAirSpaceIN(std::move(position));
+        }
+      }
+    }
+    
      
     
-
-    SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E, 0xFF);
+    SDL_SetRenderDrawColor(sdl_renderer, 0x1E, 0x1E, 0x1E,0xFF);
     SDL_RenderClear(sdl_renderer);
 
 
@@ -124,7 +135,7 @@ while (running) {
 
 
                                        
-                                       
+                                           
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::LineArriving]->getPoints().get(),       pathsAirs[TypePath::LineArriving]->getLenPath()*Sut::sScale );
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::CycleVeer]->getPoints().get(),          pathsAirs[TypePath::CycleVeer]->getLenPath()*Sut::sScale );
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::CycleWait]->getPoints().get(),          pathsAirs[TypePath::CycleWait]->getLenPath()*Sut::sScale );
@@ -132,69 +143,53 @@ while (running) {
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackLeft]->getPoints().get(),        pathsAirs[TypePath::OnTrackLeft]->getLenPath()*Sut::sScale );        
     SDL_RenderDrawPoints(sdl_renderer, pathsAirs[TypePath::OnTrackCenter]->getPoints().get(),      pathsAirs[TypePath::OnTrackCenter]->getLenPath()*Sut::sScale);
     
-     //FLYING AIRPLANE
-
-     SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
-
-
-     auto it = planes.begin();
-     while(it!=planes.end()){
-        
-         if( (*it)->getIsEndTrip()){
-              planes.erase(it);
-              if(planes.size() <= 0 ){
-                running = false;
-                break;
-              }
-              
-         }else
-         {
-            (*it)->simulate();
-            (*it)->RenderAirplane(sdl_renderer);
-         }
-         it++;
     
+
+    SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
+
+    countEnable++;
+                  
+    atc->fly(sdl_renderer);         
+                  
+    std::vector<std::future<void>> futures;       
+     for(auto idx = 0; idx < (atc->getNumPlanes()-1) ; idx++){           
+         futures.emplace_back(std::async(std::launch::deferred, &Atc::workerDetectedCrash, atc, idx));
+     } 
+     
+              
+    std::for_each(futures.begin(), futures.end(), [](std::future<void> &f){f.wait();});
+    
+     if (atc->getNumPlanes() > 0 && countEnable%111==0){
+         countEnable = 1; 
+         atc->doEnablePlains();
      }
 
 
+    atc->takeoffPlaneOUT();
+       
+
+
+    SDL_RenderPresent(sdl_renderer);
+    SDL_SetWindowTitle(sdl_window, "Air Controller"); 
+    frame_end = SDL_GetTicks();
   
-
-     //myPlane.simulate();
-   
-
-     //myPlane.RenderAirplane(sdl_renderer);
-
-
-
-  //*****************************FIN*************************************
-
-
-
-  SDL_RenderPresent(sdl_renderer);
-  SDL_SetWindowTitle(sdl_window, "Air Controller"); 
-  frame_end = SDL_GetTicks();
-
-
-   
+  
+     
     frame_count++;
     frame_duration = frame_end - frame_start;
-    
-   
+      
+     
     if (frame_duration < Sut::kMsPerFrame) {
-      SDL_Delay(Sut::kMsPerFrame - frame_duration);
+        SDL_Delay(Sut::kMsPerFrame - frame_duration);
     }
     
    
-     /*
-    if (myPlane.getIsEndTrip())
-         break;
-    */
 
  }
 
 
     
-    SDL_Delay(3000);  // Pause execution for 3000 milliseconds, for example
+    SDL_Delay(3000);  
 
     // Close and destroy the window
     SDL_DestroyWindow(sdl_window);
@@ -204,7 +199,7 @@ while (running) {
 
     std::cout<<"FIN DEL PROGRAMA" << std::endl;
      
-     return 0;
+    return 0;
 
 
  

@@ -1,16 +1,30 @@
 #include<iostream>
+
 #include "airplane.h"
 #include "SDL.h"
 
 
 
-////////////POSITION DEFINITION//////////////////
+
 
 Position::Position( std::map<TypePath, std::shared_ptr<AirPath>>  &paths, TypePath typePath, AirPath::_IndexPointOnPath indexPointOnPath){
-                _paths   = paths;  //spetial review learning           
+                _paths   = paths;            
           _currentPath   = _paths[typePath];                            
      _currentIndexPoint  = indexPointOnPath;                     
 }
+
+
+Position::Position(Position &&src){      
+
+                  
+    _currentPath       = src._currentPath;
+    _currentIndexPoint = src._currentIndexPoint;    
+                _paths = src._paths; 
+    src._currentPath   = nullptr;    
+           
+
+  }   
+
 
 
   //Move operator
@@ -30,9 +44,6 @@ Position& Position::operator=(Position &&src){
   }   
 
 
-/*_______________________________________________*/
-
-////////////AIRPLANE DEFINITION//////////////////
 
 AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane, int speedFactor){
     _position = std::move(position);     
@@ -43,7 +54,7 @@ AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane, int speedFac
 
      _isEndTrip = false;
 
-    //Place to airplain on start point of path
+    
     SDL_Point currentPoint = _position._currentPath->getPoints().get()[_position._currentIndexPoint];
 
      
@@ -107,8 +118,7 @@ void AirPlane::simulate(){
        }
 
         
-       
-     // std::cout<<"endPOINT: " << _position._currentPath->getIndexEndPoint() << "," << _position._currentIndexPoint;            
+                    
     //2. Change path      
     if(_isPathFinish == true){
          
@@ -154,7 +164,7 @@ void AirPlane::simulate(){
                 _isPathFinish = true;
                 _isEndTrip = true;
                                 
-            //case TypePath::LineRail:
+            
             break;         
         }   
 
@@ -168,7 +178,9 @@ void AirPlane::simulate(){
     
 
 
-
+int AirPlane::getSizePlane(){
+     return _cabCtr.w + 3*( _cabCtr.w)/4 + Sut::proxFactor;
+}
 
 
 void AirPlane::drawAirPlane(const SDL_Point &currentPoint){
@@ -202,6 +214,16 @@ void AirPlane::drawAirPlane(const SDL_Point &currentPoint){
 
 void AirPlane::RenderAirplane(SDL_Renderer *sdl_renderer){  
      
+      if(!_Crashed)
+        SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0xff, 0x00, SDL_ALPHA_OPAQUE);
+      else if(!_isEnable)
+                SDL_SetRenderDrawColor(sdl_renderer, 0xa8, 0xb0, 0xbc, SDL_ALPHA_OPAQUE);
+            else
+                SDL_SetRenderDrawColor(sdl_renderer, 0xff, 0x00, 0x00, SDL_ALPHA_OPAQUE);
+
+        
+      
+        
       
       SDL_RenderDrawLine(sdl_renderer, _cabCtr.x, _cabCtr.y ,  _cabCtr.x +  _cabCtr.w/2, _cabCtr.y +  _cabCtr.h/2);
       SDL_RenderFillRect(sdl_renderer, &_cabCtr);

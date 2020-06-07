@@ -44,7 +44,7 @@ Sut::TypeDecision Sut::getFollowWay(){
             break;      
       }
 
-      std::cout<<"HOLA random: "<< value <<"\n";                               
+                           
       return value;
 
 }

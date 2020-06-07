@@ -38,7 +38,8 @@ class Sut{
       
      static float constexpr  PI = 3.1415926;
      static int constexpr  sScale = 48;  //32
-     
+     static int constexpr  proxFactor = 7;  //32
+
     static constexpr std::size_t kFramesPerSecond{60};
     static constexpr std::size_t kMsPerFrame{1000 / kFramesPerSecond};
    
@@ -48,6 +49,8 @@ class Sut{
     static constexpr std::size_t OriginAxisX{384};       //256
     static constexpr std::size_t OriginAxisY{512};       //512
   
+    
+
     static SDL_Point  getTraslatePointScreen(int x, int y, int xso, int yso);
 
     static TypeDecision getFollowWay();
