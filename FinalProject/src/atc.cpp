@@ -39,7 +39,7 @@ void Atc::workerDetectedCrash(int idx){
   }
 
 
-  void Atc::doEnablePlains(){
+  void Atc::doUnEnablePlains(){
 
     std::for_each(_planes.begin(), _planes.end(), [](AirPlane &plane){
              if(plane.getIsCrashed())
@@ -65,23 +65,23 @@ void Atc::workerDetectedCrash(int idx){
  }
 
 
- int Atc::takeoffPlaneOUT(){
-
-       std::unique_lock<std::mutex> uLock(_mutex);      
-        int countTakeOff = 0;          
-
-         
+ void Atc::takeoffPlaneOUT(){
+                      
         for (auto it = _planes.begin(); it != _planes.end(); ) {
              
             if ((*it).getIsEndTrip()  ) {                            
+                
+                if((*it).getIsCrashed())
+                   _score.crashes++;
+                else
+                   _score.effectiveLanding++;
+
                 it = _planes.erase(it);             
-                countTakeOff++;
+                                                                    
             } else {
                 ++it;
             }
 
         }
-
-        return countTakeOff; 
 
  }

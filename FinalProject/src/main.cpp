@@ -4,6 +4,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <string>
 
 #include "SDL.h"
 #include "sut.h"
@@ -97,8 +98,13 @@ bool running = true;
 
 SDL_Event e;
 int countEnable = 0;
- 
+Atc::score _score; 
+std::chrono::time_point<std::chrono::system_clock> lastUpdate;
+lastUpdate = std::chrono::system_clock::now();
 while (running) {
+
+     
+    
     frame_start = SDL_GetTicks();
 
 
@@ -161,16 +167,36 @@ while (running) {
     
      if (atc->getNumPlanes() > 0 && countEnable%111==0){
          countEnable = 1; 
-         atc->doEnablePlains();
+         atc->doUnEnablePlains();
      }
 
 
     atc->takeoffPlaneOUT();
+    _score = atc->getScore();
        
+     long timeSinceLastUpdate = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - lastUpdate).count();
+     std::string title;
+     
+     if(running == false)     
+        title = "Air Traffic Controller    ABORTED...         Time: "  + std::to_string( 60 - timeSinceLastUpdate/1000)  ;
+     else
+
+        if ((60 - timeSinceLastUpdate/1000) == 0){
+          title = "Air Traffic Controller    END GAME...   Effective Landing: " + std::to_string( _score.effectiveLanding) + ", Crashes: " + std::to_string(_score.crashes)  + "              Time: "  + std::to_string( 60 - timeSinceLastUpdate/1000)  ;
+          running = false;
+        }else
+        {
+          title = "Air Traffic Controller     Effective Landing: " + std::to_string( _score.effectiveLanding) + ", Crashes: " + std::to_string(_score.crashes)  + "              Time: "  + std::to_string( 60 - timeSinceLastUpdate/1000)  ;
+        }
+        
+            
+
+
+
 
 
     SDL_RenderPresent(sdl_renderer);
-    SDL_SetWindowTitle(sdl_window, "Air Controller"); 
+    SDL_SetWindowTitle(sdl_window,  title.c_str() ); 
     frame_end = SDL_GetTicks();
   
   
@@ -183,7 +209,7 @@ while (running) {
         SDL_Delay(Sut::kMsPerFrame - frame_duration);
     }
     
-   
+    
 
  }
 
@@ -202,8 +228,8 @@ while (running) {
     return 0;
 
 
+  
  
-
 
 
 
