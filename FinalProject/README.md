@@ -1,10 +1,9 @@
-# CPPND: Capstone Hello World Repo
+# Capstone: ATC(Air Traffic Control) Computer Game
 
-This is a starter repo for the Capstone project in the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213).
+This implementation is a demo of a minimalist computer game, through which explains several concepts related with POO, management memory and concurrency in C++.
 
-The Capstone Project gives you a chance to integrate what you've learned throughout this program. This project will become an important part of your portfolio to share with current and future colleagues and employers.
+The goal of game is simulate one Air Traffic Controller (ATC), that avoid crashes and to achieve successful landings of planes.
 
-In this project, you can build your own C++ application starting with this repo, following the principles you have learned throughout this Nanodegree Program. This project will demonstrate that you can independently create applications using a wide range of C++ features.
 
 ## Dependencies for Running Locally
 * cmake >= 3.7
@@ -18,9 +17,12 @@ In this project, you can build your own C++ application starting with this repo,
   * Mac: same deal as make - [install Xcode command line tools](https://developer.apple.com/xcode/features/)
   * Windows: recommend using [MinGW](http://www.mingw.org/)
 
+* SDL 2.0 
+  * [click here for installation instructions](https://wiki.libsdl.org/Installation)
+
 ## Basic Build Instructions
 
 1. Clone this repo.
 2. Make a build directory in the top level directory: `mkdir build && cd build`
 3. Compile: `cmake .. && make`
-4. Run it: `./HelloWorld`.
+4. Run it: `./MyGame`.
