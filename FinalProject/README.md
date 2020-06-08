@@ -29,7 +29,7 @@ Interaction
    
    * When exist a crash, both airplane are switched red, a few seconds later, the airplanes are switched gray. When this happen the airplanes  are as ghost, only are visualiced but no produce damage to others ones.
 
-   * Those airplanes that arrive to final, in yellow, are considered as succesful landings.
+   * Those airplanes that arrive to final, in yellow, are considered as successful landings.
 
    * The score is placed on the title of window.
 
