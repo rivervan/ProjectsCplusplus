@@ -64,7 +64,8 @@ Interaction
 
 The project is composed by following structure of directories and files: 
 
- FinalProject (Project directory)          
+ FinalProject (Project directory)    
+ 
       |---> CMakeLists.txt (Cmake file to build project)
       
       |---> README.md (Documentation file)
@@ -91,7 +92,7 @@ The project is composed by following structure of directories and files:
      > Appropriate data and functions are grouped into classes. Member data that is subject to an invariant is hidden from the user. State is accessed via member functions.
      
      
-     The project has the following classes: 
+        The project has the following classes: 
 
         * AirPath.  Declared in airpath.h and defined in airpath.cpp        (meaning: explicit in the name)
         * Position. Declared in airplane.h and defined in airplane.cpp      (meaning: position of the airplane on the airspace <<paths>>)
