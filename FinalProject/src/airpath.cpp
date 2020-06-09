@@ -7,25 +7,25 @@
 
 
 
-
-AirPath::AirPath(int lenPath, int b, int x0, Sense sense){
+//#initializerlist
+AirPath::AirPath(int lenPath, int b, int x0, Sense sense): _lenPath(lenPath), _startPoint(0)  {
 
       if(sense == Sense::Right)
         _typePath = TypePath::OnTrackCenter;
       else
         _typePath = TypePath::LineArriving;
-    
-    
-      _lenPath  = lenPath;
-      _points   = getPointsLineArrivePath(_lenPath,b,x0,sense);      
-     _startPoint = 0; //Ready to  paths with variable direction
+        
+      _points   = getPointsLineArrivePath(_lenPath,b,x0,sense);           
      _endPoint   = _lenPath * Sut::sScale - 1;
+
+
+
 
 
 }
 
 
-
+//#RAIIsemanticmovesmartpointers
 AirPath::AirPath(AirPath &&src){
       _typePath = src._typePath;
       _lenPath  = src._lenPath;
@@ -49,7 +49,7 @@ AirPath::AirPath(AirPath &&src){
 
 
 
-
+//#passbyreference
 AirPath::AirPath(const PointCartesian& center, int Ax, int By, int x0, bool isWhole ){
     
     if (isWhole == false){
@@ -70,29 +70,32 @@ AirPath::AirPath(const PointCartesian& center, int Ax, int By, int x0, bool isWh
 
 }
 
-
-AirPath::AirPath(const PointCartesian& center,  int P, int length){
+//#initializerlist
+AirPath::AirPath(const PointCartesian& center,  int P, int length): _lenPath(length), _startPoint(0) {
     
     if ( P < 0)
         _typePath = TypePath::OnTrackRight;           
     else
         _typePath = TypePath::OnTrackLeft;
 
-
-
-     _lenPath  = length;
      _points   = getPointsLateralTrack(_lenPath, center, P);
+  
     
-
-    _startPoint = 0; //Ready to  paths with variable direction
     _endPoint   = _lenPath  * Sut::sScale - 1;
+
+   
 }
 
 
 
-//Get points on screen for Arriving
+
+
+
+
+//#DocumentthroughNameFunction:  Functions that get points on screen for generate paths
+
 std::shared_ptr<SDL_Point> AirPath::getPointsLineArrivePath(int lenPath, int b, int x0, Sense sense){   
-   std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]);   
+   std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]);   //#RAIIsemanticmovesmartpointers: RAII & smartpointer
    int xScreen =  x0 * Sut::sScale;   
    int yScreen =  b  * Sut::sScale;     
    int xScreenMax = lenPath * Sut::sScale;
@@ -124,7 +127,7 @@ std::shared_ptr<SDL_Point> AirPath::getPointsLineArrivePath(int lenPath, int b, 
 
 std::shared_ptr<SDL_Point> AirPath::getPointsCycleVeerPath(int lenPath, PointCartesian center, int Ax, int By, int x0){
       int pointsOnX = lenPath * Sut::sScale;
-      std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]);
+      std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]); //#RAIIsemanticmovesmartpointers: RAII & smartpointer
      
    float x = 0; 
    float y = 0;
@@ -168,7 +171,7 @@ std::shared_ptr<SDL_Point> AirPath::getPointsCycleVeerPath(int lenPath, PointCar
 std::shared_ptr<SDL_Point> AirPath::getPointsCycleWaitPath(int lenPath, PointCartesian center, int Ax, int By, int x0){
 
       int pointsOnX = lenPath * Sut::sScale;
-      std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]);
+      std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]); //#RAIIsemanticmovesmartpointers: RAII & smartpointer
      
       float x = 0; 
       float y = 0;
@@ -179,7 +182,7 @@ std::shared_ptr<SDL_Point> AirPath::getPointsCycleWaitPath(int lenPath, PointCar
 
       float  yPartial = 0;
    
-
+    //#controlstructures
     for(auto i = 0; i < (pointsOnX/4)  ; i++){
        
         yPartial = sqrt((By*By) - ( (By*By) * pow((x - center.x),2)/(Ax*Ax)) );        
@@ -237,7 +240,7 @@ std::shared_ptr<SDL_Point> AirPath::getPointsCycleWaitPath(int lenPath, PointCar
 
 std::shared_ptr<SDL_Point> AirPath::getPointsLateralTrack(int lenPath, PointCartesian center, int P){
       
-      std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]);
+      std::shared_ptr<SDL_Point> points (new SDL_Point[lenPath * Sut::sScale]); //#RAIIsemanticmovesmartpointers: RAII & smartpointer
       
 
       float x =  (float) center.x;

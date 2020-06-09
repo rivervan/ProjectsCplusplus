@@ -21,7 +21,7 @@ class Position
     public:        
         
          Position()=default;
-         Position(std::map<TypePath, std::shared_ptr<AirPath>> &paths, TypePath typePath, AirPath::_IndexPointOnPath indexPointOnPath);
+         Position(std::map<TypePath, std::shared_ptr<AirPath>> &paths, TypePath typePath, AirPath::_IndexPointOnPath indexPointOnPath); //#passbyreference
          Position(Position &&src);
          Position &operator=( Position &&src);         
                  
@@ -31,7 +31,7 @@ class Position
      private: 
                  
         std::map<TypePath, std::shared_ptr<AirPath>>  _paths; 
-        std::shared_ptr<AirPath>                      _currentPath;                       
+        std::shared_ptr<AirPath>                      _currentPath;   //#Composition: one current position has one path                     
         AirPath::_IndexPointOnPath                    _currentIndexPoint{0};
          
          
@@ -52,7 +52,7 @@ class AirPlane{
         AirPlane()=default;
         AirPlane(Position &&position ,_SizeAirPlane sizeAirPlane = 24, int speedFactor=1);
                
-
+        //#DocumentthroughNameFunction
         bool getIsPathFinish()const{return _isPathFinish;};
         bool getIsEndTrip()const{return _isEndTrip;};
         SDL_Point& getCurrentPointS()const {return _position._currentPath->getPoints().get()[_position._currentIndexPoint];   };
@@ -71,7 +71,7 @@ class AirPlane{
    private:
   
      
-     
+      //#Composition: one airplane has a Position
       Position _position;
     
       //Shape of plane
@@ -90,7 +90,7 @@ class AirPlane{
 
 
       //Help functions
-      void drawAirPlane(const SDL_Point &currentPoint);
+      void drawAirPlane(const SDL_Point &currentPoint); //#passbyreference
 
 
 

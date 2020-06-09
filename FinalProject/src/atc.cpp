@@ -8,12 +8,12 @@
 
 
  void Atc::recivePlaneAirSpaceIN(Position &&position){     
-      std::lock_guard<std::mutex> uLock(_mutex);                             
-      _planes.emplace_back(AirPlane(std::move(position), 24,3));              
+      std::lock_guard<std::mutex> uLock(_mutex);     //#Concurrency:mutex                         
+      _planes.emplace_back(AirPlane(std::move(position), 24,3));    //#RAIIsemanticmovesmartpointers: Move semantic          
  }
 
  
-
+ 
 void Atc::workerDetectedCrash(int idx){
      
      for(auto i = idx+1; i < _planes.size(); i++){
@@ -26,7 +26,7 @@ void Atc::workerDetectedCrash(int idx){
           float d = sqrt(x*x + y*y);
                    
            if( d <= _planes[idx].getSizePlane()){
-            std::lock_guard<std::mutex> uLock(_mutex);
+            std::lock_guard<std::mutex> uLock(_mutex);  //#Concurrency: std::lock_guard<std::mutex>
                    _planes[idx].setCrashed();
                    _planes[i].setCrashed();                                              
            }
@@ -47,9 +47,6 @@ void Atc::workerDetectedCrash(int idx){
        });
 
   }
-
-
-
 
 
  void Atc::fly(SDL_Renderer *sdl_renderer){

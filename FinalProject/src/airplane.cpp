@@ -27,7 +27,7 @@ Position::Position(Position &&src){
 
 
 
-  //Move operator
+  //#RAIIsemanticmovesmartpointers: Move operator
 Position& Position::operator=(Position &&src){      
 
     if(this == &src)
@@ -46,7 +46,7 @@ Position& Position::operator=(Position &&src){
 
 
 AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane, int speedFactor){
-    _position = std::move(position);     
+    _position = std::move(position);//#RAIIsemanticmovesmartpointers: Move semantic:
     _cabCtr.w = sizeAirPlane;
     _cabCtr.h = sizeAirPlane;
 
@@ -73,6 +73,8 @@ AirPlane::AirPlane(Position &&position, _SizeAirPlane sizeAirPlane, int speedFac
 
 
 
+
+//#DocumentthroughNameFunction
 void AirPlane::simulate(){
     
      
@@ -119,7 +121,7 @@ void AirPlane::simulate(){
 
         
                     
-    //2. Change path      
+    //2. Change path    #controlstructures  
     if(_isPathFinish == true){
          
         auto opt = _position._currentPath->getTypePath();
@@ -176,7 +178,6 @@ void AirPlane::simulate(){
 
    }
     
-
 
 int AirPlane::getSizePlane(){
      return _cabCtr.w + 3*( _cabCtr.w)/4 + Sut::proxFactor;

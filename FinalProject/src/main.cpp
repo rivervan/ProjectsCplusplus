@@ -17,10 +17,9 @@
 int main() {
 
  
-  
 
   SDL_Renderer *sdl_renderer;
-  SDL_Window *sdl_window;
+  SDL_Window   *sdl_window;
 
 
   
@@ -57,12 +56,9 @@ int main() {
   
 
 
-
+  //Data structures for planes and paths  #datastructures
   std::map<TypePath, std::shared_ptr<AirPath>> pathsAirs;   
   std::vector<std::shared_ptr<AirPlane>> planes;
-
-
-
 
   //Create PATHS
                
@@ -92,15 +88,21 @@ int main() {
      
 
 
-
+// Controller smart pointe r
 std::shared_ptr<Atc> atc(new Atc);
-bool running = true;
 
+
+// Variables of control for game
 SDL_Event e;
+bool running = true;
 int countEnable = 0;
 Atc::score _score; 
 std::chrono::time_point<std::chrono::system_clock> lastUpdate;
 lastUpdate = std::chrono::system_clock::now();
+
+
+//Main loop where to renderer scene 
+//#controlstructures
 while (running) {
 
      
@@ -108,7 +110,7 @@ while (running) {
     frame_start = SDL_GetTicks();
 
 
-      
+     // #inputfromauser
     while (SDL_PollEvent(&e)) 
     {
       if (e.type == SDL_KEYDOWN && e.key.keysym.sym== SDLK_RIGHT) {
@@ -119,7 +121,7 @@ while (running) {
          if (e.type == SDL_KEYDOWN && e.key.keysym.sym== SDLK_LEFT) {            
               std::future<void> future;
               Position position (pathsAirs, TypePath::LineArriving, 0);                                              
-              atc->recivePlaneAirSpaceIN(std::move(position));
+              atc->recivePlaneAirSpaceIN(std::move(position)); //#RAIIsemanticmovesmartpointers: Move semantic
         }
       }
     }
@@ -155,14 +157,16 @@ while (running) {
 
     countEnable++;
                   
-    atc->fly(sdl_renderer);         
+    atc->fly(sdl_renderer);    //Move objects (airplanes)     
                   
+
+
+     //#Concurrency: Task & futures <<for detect crashes: compare from much to much >>
     std::vector<std::future<void>> futures;       
      for(auto idx = 0; idx < (atc->getNumPlanes()-1) ; idx++){           
          futures.emplace_back(std::async(std::launch::deferred, &Atc::workerDetectedCrash, atc, idx));
      } 
-     
-              
+                 
     std::for_each(futures.begin(), futures.end(), [](std::future<void> &f){f.wait();});
     
      if (atc->getNumPlanes() > 0 && countEnable%111==0){
@@ -171,6 +175,7 @@ while (running) {
      }
 
 
+    //Delete airplane when trip is ended
     atc->takeoffPlaneOUT();
     _score = atc->getScore();
        
