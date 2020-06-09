@@ -64,14 +64,13 @@ Interaction
 
 The project is composed by following structure of directories and files: 
 
- FinalProject (Project directory)
-      |      
+ FinalProject (Project directory)          
       |---> CMakeLists.txt (Cmake file to build project)
-      |
+      
       |---> README.md (Documentation file)
-      |
+      
       |---> src (source files directory)
-              |                    __
+                                   __
               |---> airpath.cpp      |            
               |---> airpath.h        |
               |---> airplane.cpp     |
@@ -86,8 +85,11 @@ The project is composed by following structure of directories and files:
 # Object Oriented Programming                                   
    
      > The project code is organized into classes with class attributes to hold the data, and class methods to perform tasks.
+     
      > All class data members are explicitly specified as public, protected, or private.
+     
      > Appropriate data and functions are grouped into classes. Member data that is subject to an invariant is hidden from the user. State is accessed via member functions.
+     
      
      The project has the following classes: 
 
