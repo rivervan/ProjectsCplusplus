@@ -60,6 +60,7 @@ Interaction
 4. Run it: `./MyGame`.
 
 
+
 ## RUBRIC
 
 The project is composed by following structure of directories and files: 
@@ -85,14 +86,14 @@ The project is composed by following structure of directories and files:
                                    
 # Object Oriented Programming                                   
    
-     > The project code is organized into classes with class attributes to hold the data, and class methods to perform tasks.
+   > The project code is organized into classes with class attributes to hold the data, and class methods to perform tasks.
      
-     > All class data members are explicitly specified as public, protected, or private.
+   > All class data members are explicitly specified as public, protected, or private.
      
-     > Appropriate data and functions are grouped into classes. Member data that is subject to an invariant is hidden from the user. State is accessed via member functions.
+   > Appropriate data and functions are grouped into classes. Member data that is subject to an invariant is hidden from the user. State is accessed via member functions.
      
      
-        The project has the following classes: 
+     - The project has the following classes: 
 
         * AirPath.  Declared in airpath.h and defined in airpath.cpp        (meaning: explicit in the name)
         * Position. Declared in airplane.h and defined in airplane.cpp      (meaning: position of the airplane on the airspace <<paths>>)
@@ -100,7 +101,7 @@ The project is composed by following structure of directories and files:
         * Atc.      Declared in atc.h and defined in atc.cpp                (meaning: Air Traffic Controller)
         * Sut.      Declared in atc.h and defined in atc.cpp                (meaning: Specific utilities)
     
-        Each class is defined based on following template: 
+      - Each class is defined based on following template: 
         
           public: 
                 Constructors
@@ -115,13 +116,13 @@ The project is composed by following structure of directories and files:
                 Helper functions
            
                           
-        The project has the following structures:
+      - The project has the following structures:
     
           * PointCartesian. Declared in the file sut.h
           * score.          Declared in the class Atc
     
     
-        The project has the following enum types:
+      - The project has the following enum types:
     
           * TypeDecision.   Declared in the class Sut
           * TypePath.       Declared in the file airpath.h
